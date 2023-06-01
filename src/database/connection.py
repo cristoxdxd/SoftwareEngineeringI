@@ -33,7 +33,8 @@ class Connection:
 
     def addUser(self, name, ci, gender, phone, civil_status, birth_date, address):
         values = (name, ci, gender, phone, civil_status, birth_date, address)
-        insertStatement = '''INSERT INTO Users values (%s, %s, %s, %s, %s, %s, %s)'''
+        insertStatement = '''INSERT INTO public."Users" 
+                             values (%s, %s, %s, %s, %s, %s, %s);'''
         self.cursor.execute(insertStatement, values)
         self.connection.commit()
 
@@ -41,18 +42,21 @@ class Connection:
         self.cursor.execute('SELECT * FROM public."Users";')
         return self.cursor.fetchall()
 
-    def getUserData(self, ci):
-        self.cursor.execute('''SELECT * FROM Users WHERE ci = %s''', (ci,))
+    def searchUser(self, ci):
+        self.cursor.execute('''SELECT * FROM public."Users" WHERE "CI" = %s;''', (ci))
+        return self.cursor.fetchone()
+    
+    def getUserGender(self, ci):
+        self.cursor.execute('''SELECT gender FROM public."Users" WHERE "CI" = %s;''', (ci))
         return self.cursor.fetchone()
 
     def updateUser(self, phone, civil_status, ci):
-        self.cursor.execute('''UPDATE Users SET phone = %s, civil_status = %s WHERE ci = %s''', (phone, civil_status, ci,))
+        self.cursor.execute('''UPDATE public."Users" SET phone = %s, civil_status = %s 
+                               WHERE "CI" = %s;''', (phone, civil_status, ci))
         self.connection.commit()
         print("User Updated")
 
     def deleteUser(self, ci):
-        self.cursor.execute('''DELETE FROM Users WHERE ci = %s''', (ci,))
+        self.cursor.execute('''DELETE FROM public."Users" WHERE CI = %s;''', (ci))
         self.connection.commit()
         print("User Deleted")
-
-    
